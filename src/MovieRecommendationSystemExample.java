@@ -21,6 +21,8 @@ public class MovieRecommendationSystemExample {
     private JTextField languageField;
     private JTextField lengthField;
     private JButton okButton;
+    private JButton updateButton;
+    private JButton deleteButton;
 
     public MovieRecommendationSystemExample() {
         prepareGUI();
@@ -45,6 +47,8 @@ public class MovieRecommendationSystemExample {
         languageField = new JTextField(20);
         lengthField = new JTextField(20);
         okButton = new JButton("OK");
+        updateButton = new JButton("Update");
+        deleteButton = new JButton("Delete");
 
         //adding label & fields in frame
         mainFrame.add(idLabel);
@@ -57,7 +61,10 @@ public class MovieRecommendationSystemExample {
         mainFrame.add(languageField);
         mainFrame.add(lengthLabel);
         mainFrame.add(lengthField);
+
         mainFrame.add(okButton);
+        mainFrame.add(updateButton);
+        mainFrame.add(deleteButton);
 
         mainFrame.setVisible(true);
 
@@ -65,6 +72,21 @@ public class MovieRecommendationSystemExample {
             @Override
             public void actionPerformed(ActionEvent e) {
                 insertIntoDb();
+            }
+        });
+
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateIntoDb();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteFromDb();
             }
         });
     }
@@ -80,7 +102,6 @@ public class MovieRecommendationSystemExample {
             String password = "";
 
             Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("Connection established successfully!");
 
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Movie(id, Title, Genre, Language, Length) VALUES(?,?,?,?,?)");
             stmt.setInt(1, Integer.parseInt(idField.getText()));
@@ -96,6 +117,8 @@ public class MovieRecommendationSystemExample {
             }
 
 
+            conn.close();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -103,6 +126,59 @@ public class MovieRecommendationSystemExample {
         }
     }
 
+    private void updateIntoDb() {
+        try {
+            // Step 1: Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Step 2: Establish the connection
+            String url = "jdbc:mysql://localhost:3306/mrs";
+            String username = "root";
+            String password = "";
+
+            Connection conn = DriverManager.getConnection(url, username, password);
+
+            PreparedStatement stmt = conn.prepareStatement("UPDATE Movie SET Title =?,Genre=?,Language=?, Length=? WHERE id=?");
+            stmt.setString(1, titleField.getText());
+            stmt.setString(2, genreField.getText());
+            stmt.setString(3,languageField.getText());
+            stmt.setInt(4,Integer.parseInt(lengthField.getText()));
+            stmt.setInt(5, Integer.parseInt(idField.getText()));
+            stmt.executeUpdate();
+            System.out.println("Data updated successful");
+            conn.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteFromDb() {
+        try {
+            // Step 1: Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Step 2: Establish the connection
+            String url = "jdbc:mysql://localhost:3306/mrs";
+            String username = "root";
+            String password = "";
+
+            Connection conn = DriverManager.getConnection(url, username, password);
+
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM Movie WHERE id=?");
+            stmt.setInt(1, Integer.parseInt(idField.getText()));
+            stmt.executeUpdate();
+            System.out.println("Data deleted successful");
+            conn.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
          new MovieRecommendationSystemExample();
