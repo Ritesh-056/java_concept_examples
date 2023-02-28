@@ -73,7 +73,6 @@ public class DataBaseConnectionExample {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
 
